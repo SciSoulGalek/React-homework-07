@@ -1,4 +1,4 @@
-const VERSION = "v6";
+const VERSION = "v7";
 
 const SHELL_CACHE = `questlog-shell-${VERSION}`;
 const STATIC_CACHE = `questlog-static-${VERSION}`;
@@ -11,7 +11,8 @@ const SHELL_FILES = [
   `${BASE}manifest.json`,
   `${BASE}offline.html`,
   `${BASE}icons/icon-192.png`,
-  `${BASE}icons/icon-512.png`
+  `${BASE}icons/icon-512.png`,
+  `${BASE}precache-assets.json`
 ];
 
 self.addEventListener("install", (event) => {
@@ -23,18 +24,17 @@ self.addEventListener("install", (event) => {
       const response = await fetch(BASE);
       const html = await response.text();
 
-      const assets = [
-        ...html.matchAll(/(?:src|href)="([^"]+\.(?:js|css)(?:\?[^"]*)?)"/g),
-      ].map((match) => new URL(match[1], self.registration.scope).href);
+      const assetsResponse = await fetch(`${BASE}precache-assets.json`);
+      const assets = await assetsResponse.json();
 
       const staticCache = await caches.open(STATIC_CACHE);
 
       await Promise.all(
-        assets.map(async (url) => {
-          const assetResponse = await fetch(url);
-
-          if (assetResponse.ok) {
-            await staticCache.put(url, assetResponse);
+        assets.map(async (asset) => {
+          const response = await fetch(`${BASE}${asset}`);
+        
+          if (response.ok) {
+            await staticCache.put(`${BASE}${asset}`, response);
           }
         }),
       );
