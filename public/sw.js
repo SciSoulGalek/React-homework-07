@@ -1,4 +1,4 @@
-const VERSION = "v5";
+const VERSION = "v6";
 
 const SHELL_CACHE = `questlog-shell-${VERSION}`;
 const STATIC_CACHE = `questlog-static-${VERSION}`;

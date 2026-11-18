@@ -13,6 +13,8 @@ export default function PWAUpdatePrompt() {
       registration = await navigator.serviceWorker.register(
         `${import.meta.env.BASE_URL}sw.js`
       );
+      
+      await registration.update();
 
       if (registration.waiting && navigator.serviceWorker.controller) {
         setWaitingWorker(registration.waiting);
